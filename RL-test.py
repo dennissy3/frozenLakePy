@@ -5,12 +5,16 @@ import numpy
 import random
 observation = 0
 stepChosen = None
+oldObservation = None
 env = gym.make('FrozenLake-v0')
 env.__init__(is_slippery=False)
 	
 # generate and print the 4x16 matrix
 Q = numpy.zeros((env.action_space.n, env.observation_space.n))
 print(Q)
+
+def setQs(row, col):
+	Q[col, row] = #HIER MUSS DER NEUE Q-WERT HIN
 
 # we need a lot of iteration to get through all possible variations
 for t in range(10):
@@ -23,6 +27,7 @@ for t in range(10):
 		if e <= 0.2:
 			# print(e)
 			action = env.action_space.sample()
+			oldObservation = observation
 			observation, reward, done, info = env.step(action)
 			stepChosen = action
 			env.step(action)
@@ -34,9 +39,12 @@ for t in range(10):
 			qValues = Q[:, observation]
 			maxQPosition = numpy.argmax(qValues)
 			stepChosen = maxQPosition
+			oldObservation = observation
 			observation, reward, done, info = env.step(maxQPosition)
 			env.step(maxQPosition)
 			env.render()
+
+		setQs(stepChosen, oldObservation)
 
 		# we are breaking the loop as soon as done is true (equals Hole or Goal)
 		# reward indicates whether we reached the Goal or just any Hole
